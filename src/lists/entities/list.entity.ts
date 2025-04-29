@@ -1,11 +1,9 @@
-import { Column, Table, Model } from 'sequelize-typescript';
-
-export type ListAttributes = {
+export class List {
+  id?: number;
   name: string;
-};
 
-@Table
-export class List extends Model<ListAttributes> {
-  @Column
-  name: string;
+  constructor(name: string, id?: number) {
+    this.name = name;
+    this.id = id;
+  }
 }

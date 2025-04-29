@@ -1,20 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateListDto } from './dto/create-list.dto';
-import { List } from './entities/list.entity';
-import { InjectModel } from '@nestjs/sequelize';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+import { ListGatewayInterface } from './gateways/list-gateway-interface';
+import { List } from './entities/list.entity';
 
 @Injectable()
 export class ListsService {
   constructor(
-    @InjectModel(List)
-    private listModel: typeof List,
+    @Inject('ListGatewayInterface')
+    private listGateway: ListGatewayInterface, //porta listgatewaysequelize
     private httpService: HttpService,
   ) {}
 
   async create(createListDto: CreateListDto) {
-    const list = await this.listModel.create(createListDto);
+    const list = new List(createListDto.name);
+    await this.listGateway.create(list);
     await lastValueFrom(
       this.httpService.post('lists', {
         name: list.name,
@@ -24,13 +25,13 @@ export class ListsService {
   }
 
   findAll() {
-    return this.listModel.findAll();
+    return this.listGateway.findAll();
   }
 
   async findOne(id: number) {
-    const list = await this.listModel.findByPk(id);
+    const list = await this.listGateway.findById(id);
     if (!list) {
-      throw new Error(`List with id ${id} not found`);
+      throw new Error(`ListModel with id ${id} not found`);
     }
     return list;
   }

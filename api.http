@@ -8,8 +8,17 @@ POST http://localhost:3000/lists
 Content-Type: application/json
 
 {
-  "name": "My List2"
+  "name": "TesteAgora"
 }
 
 ###
 GET http://localhost:3001/lists
+
+###
+POST http://localhost:3001/lists
+Content-Type: application/json
+
+{
+  "id": 5000,
+  "name": "Vai?"
+}
