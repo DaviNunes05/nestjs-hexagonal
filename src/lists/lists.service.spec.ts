@@ -1,23 +1,20 @@
 import { ListsService } from './lists.service';
 import { ListGatewayInMemory } from './gateways/list-gateway-in-memory';
-import { of } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
-
-const mockHttpService: Partial<HttpService> = {
-  post: jest.fn().mockReturnValue(of(null)),
-};
 
 describe('ListsService', () => {
   let service: ListsService;
-  let listGateway: ListGatewayInMemory;
+  let listPersistenceGateway: ListGatewayInMemory;
+  let listIntegrationGateway: ListGatewayInMemory;
 
   beforeEach(() => {
-    listGateway = new ListGatewayInMemory();
-    service = new ListsService(listGateway, mockHttpService as HttpService);
+    listPersistenceGateway = new ListGatewayInMemory();
+    listIntegrationGateway = new ListGatewayInMemory();
+    service = new ListsService(listPersistenceGateway, listIntegrationGateway);
   });
 
   it('deve criar uma lista', async () => {
     const list = await service.create({ name: 'Lista de Teste' });
-    expect(listGateway.items).toEqual([list]);
+    expect(listPersistenceGateway.items).toEqual([list]);
+    expect(listIntegrationGateway.items).toEqual([list]);
   });
 });
